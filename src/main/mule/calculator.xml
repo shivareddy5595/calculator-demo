@@ -59,6 +59,27 @@ output application/json
 			</ee:message>
 		</ee:transform>
 			</when>
+			<when expression='#[vars.op == "mul"]'>
+				<ee:transform doc:name="Transform Message" doc:id="3c50b850-d171-4aaf-b22c-b93a6cdd26cc" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"result":  if (vars.num1 != null and vars.num2 != null) {
+		"First Number": vars.num1,
+		"Second Number": vars.num2,
+		"multiplication result": vars.num1 as Number  * vars.num2 as Number
+	} 
+						else {
+							"First Number" : 20,
+							"Second Number" : 10,
+							"multiplication result": 20 as Number * 10 as Number 
+						}
+																		
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
 			<otherwise >
 				<ee:transform doc:name="Transform Message" doc:id="3c3e8ceb-1b65-4e74-96c3-1357407917ca" >
 					<ee:message >
