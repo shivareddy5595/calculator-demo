@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="54a53b17-111c-44a4-a889-983ef747f891" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="calculator" doc:id="a280c9d7-88d9-4f40-8718-e5d04c004f02" >
+		<http:listener doc:name="GET /calc" doc:id="12ea9696-5e5a-4a5a-b411-27a5a841e7bc" config-ref="HTTP_Listener_config" path="/calc"/>
+		<set-variable value="#[attributes.queryParams.'op']" doc:name="Set Variable" doc:id="fe73d821-c181-4b9a-a6f3-8586c1fc7074" variableName="op"/>
+		<set-variable value="#[attributes.queryParams.'num1']" doc:name="Number 1" doc:id="2d747e0c-4cf5-4ee3-a7eb-af20992b002c" variableName="num1"/>
+		<set-variable value="#[attributes.queryParams.'num2']" doc:name="Number 2" doc:id="78d78f1b-f03b-4735-ab5b-c94473431edf" variableName="num2"/>
+		<choice doc:name="Choice" doc:id="5cdd5402-84e4-40fc-b611-ba3bf3bc0c6a" >
+			<when expression='#[vars.op == "add"]'>
+				<ee:transform doc:name="Transform Message" doc:id="671f8687-5975-47e8-992b-7248d6310fb1">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+
+	"result":  if (vars.num1 != null and vars.num2 != null) {
+		"First Number": vars.num1,
+		"Second Number": vars.num2,
+		"Addition result": vars.num1 as Number  + vars.num2 as Number
+	} 
+						else {
+							"First Number" : 20,
+							"Second Number" : 10,
+							"Addition result": 20 as Number + 10 as Number 
+						}
+																		
+									
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<when expression='#[vars.op == "sub"]'>
+				<ee:transform doc:name="Transform Message" doc:id="bc898d6e-1ae0-4f6b-9e3b-c715c472e08e">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+
+	"result":  if (vars.num1 != null and vars.num2 != null) {
+		"First Number": vars.num1,
+		"Second Number": vars.num2,
+		"substraction result": vars.num1 as Number  - vars.num2 as Number
+	} 
+						else {
+							"First Number" : 20,
+							"Second Number" : 10,
+							"Substraction result": 20 as Number - 10 as Number 
+						}
+																		
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="3c3e8ceb-1b65-4e74-96c3-1357407917ca" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output text/plain
+---
+"Please provide the operator and input values.\n"++"The available opertaions are \n"++"1.add \n"++"2.sub\n"++"3.mul\n"++"4.div\n"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
