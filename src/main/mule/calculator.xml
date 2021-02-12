@@ -80,13 +80,34 @@ output application/json
 					</ee:message>
 				</ee:transform>
 			</when>
+			<when expression='#[vars.op == "div"]'>
+				<ee:transform doc:name="Transform Message" doc:id="34424a2e-e201-4f76-a536-d78eb79bdcbe" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"result":  if (vars.num1 != null and vars.num2 != null) {
+		"First Number": vars.num1,
+		"Second Number": vars.num2,
+		"division result": vars.num1 as Number  / vars.num2 as Number
+	} 
+						else {
+							"First Number" : 20,
+							"Second Number" : 10,
+							"division result": 20 as Number / 10 as Number 
+						}
+																		
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
 			<otherwise >
 				<ee:transform doc:name="Transform Message" doc:id="3c3e8ceb-1b65-4e74-96c3-1357407917ca" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
 output text/plain
 ---
-"Please provide the operator and input values.\n"++"The available opertaions are \n"++"1.add \n"++"2.sub\n"++"3.mul\n"++"4.div\n"]]></ee:set-payload>
+"Please provide the correct operator\n"++"The available opertaions are \n"++"1.add \n"++"2.sub\n"++"3.mul\n"++"4.div\n"]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
 			</otherwise>
